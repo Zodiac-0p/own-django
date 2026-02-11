@@ -106,7 +106,7 @@ def login_view(request):
         messages.error(request, "Invalid credentials")
         return redirect("login")
 
-    return render(request, "login.html")
+    return render(request, "OTT/login.html")
 
 
 @require_POST
