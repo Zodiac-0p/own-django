@@ -1,22 +1,20 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-load_dotenv()
 
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # =========================
-# Core Settings
+# Core
 # =========================
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-this-in-render")
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
-# DEBUG = True
- 
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-this")
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 # =========================
-# Installed Apps
+# Apps
 # =========================
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -28,6 +26,10 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "corsheaders",
+
+    # Cloudinary
+    "cloudinary",
+    "cloudinary_storage",
 
     "OTT",
 ]
@@ -42,8 +44,6 @@ MIDDLEWARE = [
 
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-
-    # "OTT.middleware.UpdateLastSeenMiddleware",
 
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -85,8 +85,10 @@ DATABASES = {
 }
 
 # =========================
-# Password Validators
+# Auth
 # =========================
+AUTH_USER_MODEL = "OTT.User"
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -103,47 +105,53 @@ USE_I18N = True
 USE_TZ = True
 
 # =========================
-# Static Files (RENDER FIX ✅)
+# Static (Render)
 # =========================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# ✅ only production uses manifest storage
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================
-# Media
+# Media (Cloudinary)
 # =========================
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME", ""),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY", ""),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET", ""),
+}
+
+# ✅ store uploaded media in Cloudinary
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# Optional: still keep MEDIA_URL for local references (not used by Cloudinary)
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 # =========================
-# Default Primary Key
+# Default PK
 # =========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# =========================
-# Custom User Model
-# =========================
-AUTH_USER_MODEL = "OTT.User"
 
 # =========================
 # React (Vite) -> Django (Session Auth)
 # =========================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    os.getenv("FRONTEND_URL", "").strip(),   # set this in Render for Vercel URL
 ]
-CORS_ALLOWED_ORIGINS = [x for x in CORS_ALLOWED_ORIGINS if x]  # remove empty
+FRONTEND_URL = os.getenv("FRONTEND_URL", "").strip()
+if FRONTEND_URL:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]
-if os.getenv("FRONTEND_URL"):
-    CSRF_TRUSTED_ORIGINS.append(os.getenv("FRONTEND_URL"))
+if FRONTEND_URL:
+    CSRF_TRUSTED_ORIGINS.append(FRONTEND_URL)
 
-# Cookies for session auth
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
@@ -151,6 +159,9 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
+# =========================
+# Logging (Render)
+# =========================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

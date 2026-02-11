@@ -1,63 +1,37 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from .models import Movie
+from .models import Movie, User
 
-User = get_user_model()
-
-
-# ============================
-# ✅ USER SERIALIZER
-# ============================
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
-        fields = ["id", "username", "email", "password"]
-        read_only_fields = ["id"]
+        fields = ["email", "username", "password"]
+        extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
-        email = validated_data.get("email")
-        username = validated_data.get("username")
-        password = validated_data.get("password")
-
-        user = User.objects.create_user(
-            email=email,
-            username=username,
-            password=password
-        )
+        password = validated_data.pop("password", None)
+        user = User(**validated_data)
+        if password:
+            user.set_password(password)
+        user.save()
         return user
 
 
-# ============================
-# 🎬 MOVIE SERIALIZER (FULL URL)
-# ============================
 class MovieSerializer(serializers.ModelSerializer):
-    thumbnail_url = serializers.SerializerMethodField()
-    video_url = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
+    video = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
-        fields = [
-            "id",
-            "title",
-            "description",
-            "view_count",
-            "thumbnail_url",
-            "video_url",
-        ]
-        read_only_fields = ["id"]
+        fields = ["id", "title", "description", "view_count", "thumbnail", "video"]
 
-    def get_thumbnail_url(self, obj):
-        request = self.context.get("request")
-        if obj.thumbnail_url and hasattr(obj.thumbnail_url, "url"):
-            url = obj.thumbnail_url.url
-            return request.build_absolute_uri(url) if request else url
-        return None
+    def get_thumbnail(self, obj):
+        try:
+            return obj.thumbnail_url.url if obj.thumbnail_url else ""
+        except Exception:
+            return ""
 
-    def get_video_url(self, obj):
-        request = self.context.get("request")
-        if obj.video_url and hasattr(obj.video_url, "url"):
-            url = obj.video_url.url
-            return request.build_absolute_uri(url) if request else url
-        return None
+    def get_video(self, obj):
+        try:
+            return obj.video_url.url if obj.video_url else ""
+        except Exception:
+            return ""

@@ -4,6 +4,8 @@ from datetime import timedelta
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cloudinary.models import CloudinaryField
+
 
 
 # -------------------------
@@ -73,11 +75,14 @@ class Movie(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     view_count = models.IntegerField(default=0)
-    thumbnail_url = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
-    video_url = models.FileField(upload_to="videos/", blank=True, null=True)
+
+    # ✅ Stored in Cloudinary
+    thumbnail_url = CloudinaryField("thumbnail", resource_type="image", blank=True, null=True)
+    video_url = CloudinaryField("video", resource_type="video", blank=True, null=True)
 
     def __str__(self):
         return self.title
+
 
 
 class ViewHistory(models.Model):
