@@ -1,0 +1,129 @@
+{% extends 'layout/app-layout.html' %}
+{% load static %}
+
+{% block 'content' %}
+
+<style>
+/* ✅ Don't block navbar / page scroll globally */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #0f171e;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  overflow-x: hidden;      /* ✅ only block horizontal scroll */
+}
+
+/* ✅ Make sure navbar stays above hero */
+.navbar,
+header,
+nav {
+  position: relative;
+  z-index: 9999;
+}
+
+/* ✅ Hero section (NOT fixed) so navbar can exist above it */
+.fullscreen-home {
+  position: relative;       /* ✅ was fixed (this caused navbar to disappear) */
+  min-height: 100vh;        /* ✅ full screen */
+  width: 100%;
+  background: url("{% static 'images/banner.jpg' %}") center center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  padding-left: 6%;
+}
+
+/* Cinematic overlay behind content */
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;               /* ✅ below content */
+  background: linear-gradient(
+    to right,
+    rgba(0,0,0,0.92) 0%,
+    rgba(0,0,0,0.75) 40%,
+    rgba(0,0,0,0.35) 70%,
+    rgba(0,0,0,0.15) 100%
+  );
+}
+
+/* Content above overlay */
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+}
+
+/* Title */
+.content h1 {
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+
+/* Paragraph */
+.content p {
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  color: #ccc;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.btn-watch, .btn-info {
+  border: none;
+  padding: 0.85rem 2.2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  color: white;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Watch Button */
+.btn-watch {
+  background-color: #00a8e1;
+  margin-right: 12px;
+}
+.btn-watch:hover {
+  background-color: #008bb5;
+}
+
+/* Info Button */
+.btn-info {
+  background-color: rgba(255,255,255,0.2);
+}
+.btn-info:hover {
+  background-color: rgba(255,255,255,0.35);
+}
+</style>
+
+<div class="fullscreen-home">
+  <div class="overlay"></div>
+
+  <div class="content">
+    <h1>Welcome to Flickify</h1>
+    <p>
+      Stream unlimited movies, TV shows and exclusive originals.
+      Experience cinema like never before.
+    </p>
+
+    {% if request.user.is_authenticated %}
+      <button onclick="location.href='{% url 'movie_list' %}'" class="btn-watch">
+        Watch Now
+      </button>
+      <button onclick="location.href='{% url 'dashboard' %}'" class="btn-info">
+        Dashboard
+      </button>
+    {% else %}
+      <button onclick="location.href='{% url 'login' %}'" class="btn-watch">
+        Login
+      </button>
+      <button class="btn-info">
+        More Info
+      </button>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

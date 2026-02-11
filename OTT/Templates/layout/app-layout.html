@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <script>
+  window.addEventListener("pageshow", function (event) {
+    // If page is loaded from back/forward cache, force reload
+    if (event.persisted) {
+      window.location.reload();
+    }
+  });
+</script>
+    
+    <style>
+      /* Position toast at bottom-right corner */
+      #logoutToast {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        z-index: 1100;
+      }
+    </style>
+</head>
+<body>
+    {% include 'partials/Navbar.html' %}
+    
+    {% block 'content' %}
+    {% endblock %}
+    
+    <!-- Bootstrap 5.3 Bundle JS (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Toast HTML for messages -->
+    {% if messages %}
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+      <div id="logoutToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Show toast on page load if messages exist
+      document.addEventListener('DOMContentLoaded', function () {
+        var toastEl = document.getElementById('logoutToast');
+        var bsToast = new bootstrap.Toast(toastEl);
+        bsToast.show();
+      });
+    </script>
+    {% endif %}
+</body>
+</html>

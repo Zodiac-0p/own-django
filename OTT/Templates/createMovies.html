@@ -1,0 +1,96 @@
+{% extends 'layout/app-layout.html' %}
+
+{% block 'content' %}
+<style>
+    body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6); /* dark overlay */
+    z-index: 0;
+}
+
+.form-card {
+    position: relative;
+    z-index: 1;
+}
+
+    /* Reuse similar styling as login-card for form container */
+    .form-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 40px 30px;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        max-width: 600px;
+        margin: 40px auto;
+        color: #fff;
+    }
+
+    label {
+        font-weight: 600;
+        color: #ddd;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #00fff0, #a100ff);
+        border: none;
+        font-weight: bold;
+        border-radius: 50px;
+        padding: 12px 30px;
+        transition: 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        box-shadow: 0 0 15px #00fff0;
+        transform: scale(1.03);
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+
+    .form-control::placeholder {
+        color: #aaa !important;
+    }
+
+    textarea.form-control {
+        border-radius: 15px; /* Slightly different for textarea */
+    }
+</style>
+
+<div class="form-card">
+    <h2>Create Movie</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="movie_name">Movie Name:</label>
+            <input type="text" id="movie_name" name="movie_name" class="form-control" placeholder="Enter movie name" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="movie_description">Movie Description:</label>
+            <textarea id="movie_description" name="movie_description" class="form-control" placeholder="Enter movie description" rows="4" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="movie_image">Movie Image:</label>
+            <input type="file" id="movie_image" name="movie_image" class="form-control" accept="image/*" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="movie_video">Movie Video:</label>
+            <input type="file" id="movie_video" name="movie_video" class="form-control" accept="video/*" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Movie</button>
+    </form>
+</div>
+{% endblock %}

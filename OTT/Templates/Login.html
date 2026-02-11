@@ -1,0 +1,87 @@
+{% extends 'layout/app-layout.html' %}
+{% load static %}
+
+{% block 'content' %}
+<style>
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .login-container {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 2rem;
+        border-radius: 10px;
+        background: white;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .form-control {
+        border-radius: 8px;
+    }
+
+    .btn-login {
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .text-link {
+        text-decoration: none;
+        font-weight: 500;
+    }
+</style>
+
+{% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-info">
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="login-container">
+    <div class="login-card">
+        <h3 class="text-center mb-4">Login</h3>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 btn-login">
+                Log In
+            </button>
+
+            <p class="text-center mt-3">
+                Don’t have an account?
+                <a href="{% url 'register' %}" class="text-link">Register</a>
+            </p>
+
+            <p class="text-center">
+                <a href="{% url 'change_password' %}" class="text-link">
+                    Forgot Password?
+                </a>
+            </p>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'layout/app-layout.html' %}
+
+{% block 'content' %}
+<div class="container mt-4">
+    <!-- Add Movie Button -->
+    <a href="{% url 'create_movie' %}" class="btn btn-primary mb-3">Add Movie</a>
+
+    <!-- Custom Styles -->
+    <style>
+        /* Center card and make background subtle */
+        .card {
+            border-radius: 12px;
+        }
+
+        /* Uniform size for thumbnails and videos */
+        .movie-thumbnail {
+            width: 100px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .movie-video {
+            width: 200px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Align text vertically */
+        td {
+            vertical-align: middle;
+        }
+
+        /* Table appearance */
+        .table th, .table td {
+            text-align: center;
+        }
+    </style>
+
+    <!-- Centered Card -->
+    <div class="d-flex justify-content-center">
+        <div class="card bg-light shadow-lg w-100">
+            <div class="card-body">
+                <h5 class="card-title text-center mb-3">Movie List</h5>
+
+                <table class="table table-bordered text-center bg-white">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Video</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movie in movies %}
+                        <tr>
+                            <td>
+                                <img src="{{ movie.thumbnail_url.url }}" alt="Thumbnail" class="movie-thumbnail">
+                            </td>
+                            <td>{{ movie.title }}</td>
+                            <td>{{ movie.description }}</td>
+                            <td>
+                                <video class="movie-video" controls>
+                                    <source src="{{ movie.video_url.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </td>
+                            <td>
+                                <a href="{% url 'edit_movie' movie.id %}" class="btn btn-sm btn-warning me-2">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+
+                                <form action="{% url 'delete_movie' movie.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Are you sure you want to delete this movie?');">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">No movies available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

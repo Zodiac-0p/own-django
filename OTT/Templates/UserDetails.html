@@ -1,0 +1,68 @@
+{% extends 'layout/app-layout.html' %}
+
+{% block 'content' %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-9">
+      <div class="card shadow-lg border-0">
+        <div class="card-body">
+          <h4 class="text-center mb-4 fw-bold text-dark">User List</h4>
+
+          <div class="table-responsive">
+            <table class="table table-bordered text-center align-middle bg-white">
+              <thead class="table-dark">
+                <tr>
+                  <th>Role</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for user in users %}
+                <tr>
+                  <td>
+                    {% if user.is_superuser or user.is_staff or user.is_admin %}
+                      <span class="badge bg-primary">Admin</span>
+                    {% else %}
+                      <span class="badge bg-info text-dark">User</span>
+                    {% endif %}
+                  </td>
+
+                  <td>{{ user.username|default:"—" }}</td>
+                  <td>{{ user.email }}</td>
+
+                  <td>
+                    {% if user.activity and user.activity.is_online %}
+                      <span class="badge bg-success">Online</span>
+                    {% else %}
+                      <span class="badge bg-secondary">Offline</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4">No users found</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-muted small mb-0 text-center">
+            Status updates automatically based on recent activity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // optional: refresh every 5s (change as you like)
+  setInterval(() => {
+    location.reload();
+  }, 5000);
+</script>
+{% endblock %}

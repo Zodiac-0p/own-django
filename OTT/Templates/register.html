@@ -1,0 +1,130 @@
+{% extends 'layout/app-layout.html' %}
+
+{% block 'content' %}
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .animated-background {
+        background: linear-gradient(45deg, #e50914, #1a1a1a, #e50914);
+        background-size: 400% 400%;
+        animation: gradientAnimation 10s ease infinite;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .register-container {
+        background: rgba(20, 20, 20, 0.95);
+        backdrop-filter: blur(12px);
+        padding: 30px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 0 25px rgba(255, 0, 0, 0.5), 0 0 50px rgba(255, 0, 0, 0.3);
+        transition: 0.3s ease-in-out;
+    }
+
+    .register-container:hover {
+        box-shadow: 0 0 35px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.4);
+    }
+
+    .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: none;
+        color: white;
+        border-radius: 50px;
+        padding-left: 20px;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .btn-custom {
+        background-color: #e50914;
+        border: none;
+        font-size: 1.1rem;
+        font-weight: bold;
+        border-radius: 50px;
+        padding: 10px 0;
+        transition: 0.3s ease-in-out;
+        box-shadow: 0 0 15px #e50914;
+    }
+
+    .btn-custom:hover {
+        background-color: #b20710;
+        box-shadow: 0 0 20px #ff1b26;
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0% { box-shadow: 0 0 10px #e50914; }
+        50% { box-shadow: 0 0 20px #ff1b26; }
+        100% { box-shadow: 0 0 10px #e50914; }
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .text-danger {
+        color: #ff4b5c !important;
+    }
+
+</style>
+
+<div class="animated-background">
+    <div class="register-container">
+        <h2 class="text-center mb-4 text-light">Create an Account</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label text-light">Name</label>
+                <input type="text" class="form-control" name="username" placeholder="Enter your name" required />
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="mb-3">
+                <label class="form-label text-light">Email</label>
+                <input type="email" class="form-control" name="email" placeholder="Enter your email" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light">Password</label>
+                <input type="password" class="form-control" name="password" placeholder="Enter password" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light">Confirm Password</label>
+                <input type="password" class="form-control" name="confirm_password" placeholder="Confirm password" required />
+            </div>
+
+            <button type="submit" class="btn btn-custom w-100 text-white">Register</button>
+        </form>
+        <p class="text-center mt-3 text-light">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-danger fw-bold">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
