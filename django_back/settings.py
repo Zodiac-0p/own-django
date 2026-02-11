@@ -39,7 +39,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
 
-    "OTT.middleware.UpdateLastSeenMiddleware",
+    # "OTT.middleware.UpdateLastSeenMiddleware",
 
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",

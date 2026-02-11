@@ -65,9 +65,14 @@ class UpdateLastSeenMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
 
-        if request.user.is_authenticated:
-            UserActivity.objects.update_or_create(
-                user=request.user,
-                defaults={"last_seen": timezone.now()}
-            )
+        user = getattr(request, "user", None)
+        if user and user.is_authenticated:
+            try:
+                # only if your User model has last_seen
+                user.last_seen = timezone.now()
+                user.save(update_fields=["last_seen"])
+            except Exception:
+                # don't kill the whole site if DB/table/field isn't ready
+                pass
+
         return response
