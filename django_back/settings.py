@@ -1,129 +1,147 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-+9-=y^7+hj5hsidw3i@ht^$+op9n=&6d@b9-5+a(58_-jl29l-'
-DEBUG = True
+# =========================
+# Core Settings
+# =========================
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-change-this-in-render")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
-
+# =========================
+# Installed Apps
+# =========================
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    'OTT',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    "rest_framework",
+    "corsheaders",
+
+    "OTT",
 ]
 
+# =========================
+# Middleware
+# =========================
 MIDDLEWARE = [
-    # ✅ CORS must be at the top (before CommonMiddleware)
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+
     "OTT.middleware.UpdateLastSeenMiddleware",
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'django_back.urls'
+ROOT_URLCONF = "django_back.urls"
 
+# =========================
+# Templates
+# =========================
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
-    },
+    }
 ]
 
-WSGI_APPLICATION = 'django_back.wsgi.application'
+WSGI_APPLICATION = "django_back.wsgi.application"
 
-
+# =========================
+# Database (SQLite for now)
+# =========================
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
-
+# =========================
+# Password Validators
+# =========================
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'   # ✅ better for India
+# =========================
+# Locale
+# =========================
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
+# =========================
+# Static Files (RENDER FIX ✅)
+# =========================
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-STATIC_URL = 'static/'
+# =========================
+# Media
+# =========================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
+# =========================
+# Default Primary Key
+# =========================
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# =========================
+# Custom User Model
+# =========================
+AUTH_USER_MODEL = "OTT.User"
 
-# ✅ your custom user model
-AUTH_USER_MODEL = 'OTT.User'
-
-
-# ==========================
-# ✅ React (Vite) -> Django (Session Auth)
-# ==========================
-
+# =========================
+# React (Vite) -> Django (Session Auth)
+# =========================
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://YOUR-VERCEL-FRONTEND.vercel.app",
+    os.getenv("FRONTEND_URL", "").strip(),   # set this in Render for Vercel URL
 ]
+CORS_ALLOWED_ORIGINS = [x for x in CORS_ALLOWED_ORIGINS if x]  # remove empty
 
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
 ]
+if os.getenv("FRONTEND_URL"):
+    CSRF_TRUSTED_ORIGINS.append(os.getenv("FRONTEND_URL"))
 
-# ✅ session cookie settings
+# Cookies for session auth
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 
-# ✅ CSRF cookie must be readable in React to send it back
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
-
-# ✅ user session time (optional)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-# SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-]
-
-
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
